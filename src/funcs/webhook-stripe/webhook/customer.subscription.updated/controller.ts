@@ -1,7 +1,9 @@
 import { Stripe } from 'stripe'
 
 import { stripeClient } from '~/clients/stripe.client'
-import { getUser } from '~/types/users'
+import { getRichMenuId } from '~/domains/rich-menu.domain'
+import { getUser, updateUser } from '~/types/users'
+import { lineClient, makeReplyMessage } from '~/utils/line'
 
 interface Props {
   customerId: string
@@ -29,7 +31,12 @@ export const customerSubscriptionUpdatedController = async (props: Props): Promi
 
   // 初回契約時
   if (beforeSubscriptionStatus === 'incomplete' && subscriptionStatus === 'active') {
-    //
+    const richMenuId = await getRichMenuId('active')
+    await Promise.all([
+      updateUser(userId!, { isActive: true }),
+      lineClient.pushMessage(userId!, makeReplyMessage('課金したよ！')),
+      richMenuId && lineClient.linkRichMenuToUser(userId!, richMenuId)
+    ])
   }
 
   // 契約更新に失敗した時

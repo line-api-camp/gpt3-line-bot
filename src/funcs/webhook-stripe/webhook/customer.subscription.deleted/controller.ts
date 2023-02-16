@@ -1,5 +1,7 @@
 import { stripeClient } from '~/clients/stripe.client'
-import { getUser } from '~/types/users'
+import { getRichMenuId } from '~/domains/rich-menu.domain'
+import { getUser, updateUser } from '~/types/users'
+import { lineClient, makeReplyMessage } from '~/utils/line'
 
 interface Props {
   customerId: string
@@ -26,4 +28,11 @@ export const customerSubscriptionDeletedController = async (props: Props): Promi
   if (subscriptionList.length > 0) {
     return
   }
+
+  const richMenuId = await getRichMenuId('default')
+  await Promise.all([
+    updateUser(userId!, { isActive: false }),
+    lineClient.pushMessage(userId!, makeReplyMessage('キャンセル完了しました')),
+    richMenuId && lineClient.linkRichMenuToUser(userId!, richMenuId)
+  ])
 }
