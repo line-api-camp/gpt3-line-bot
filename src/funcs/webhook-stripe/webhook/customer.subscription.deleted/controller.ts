@@ -25,7 +25,7 @@ export const customerSubscriptionDeletedController = async (props: Props): Promi
 
   // subscription check.
   const { data: subscriptionList } = await stripeClient.subscriptions.list({ customer: customerId })
-  if (subscriptionList.length > 0) {
+  if (subscriptionList.length === 0) {
     return
   }
 
