@@ -9,7 +9,8 @@
     "logs": "firebase functions:log",
     "eslint": "eslint --ext \".ts\" . --fix",
     "prettier": "prettier --write .",
-    "lint": "yarn eslint && yarn prettier"
+    "lint": "yarn eslint && yarn prettier",
+    "init:richmenu": "yarn build && node dist/migrations/init-richmenu.js"
   },
   "engines": {
     "node": "16"
