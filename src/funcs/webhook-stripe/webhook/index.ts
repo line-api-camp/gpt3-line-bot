@@ -15,8 +15,6 @@ export const stripeWebhookHandlers = async (req: Request, res: Response) => {
       case 'customer.subscription.deleted':
         await customerSubscriptionDeletedHandler(event)
         break
-      default:
-        throw new Error('stripe event type is not found.')
     }
 
     res.status(200).send('success').end()
