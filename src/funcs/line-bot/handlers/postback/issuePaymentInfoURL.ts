@@ -14,7 +14,7 @@ export const issuePaymentInfoURLHandler = async (event: PostbackEvent): Promise<
     user = await createUser(userId, getInitUserData())
   }
 
-  if (user.isActive) {
+  if (!user.isActive) {
     return
   }
 
