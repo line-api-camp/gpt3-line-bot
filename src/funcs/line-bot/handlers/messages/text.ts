@@ -1,6 +1,8 @@
 import { MessageEvent, TextEventMessage } from '@line/bot-sdk'
 
 import { getCompletion } from '~/domains/opneai.domain'
+import { getInitUserData } from '~/types/models'
+import { createUser, getUser } from '~/types/users'
 import { lineClient, makeReplyMessage } from '~/utils/line'
 import { errorLogger } from '~/utils/util'
 
@@ -9,7 +11,22 @@ import { errorLogger } from '~/utils/util'
 // *********
 
 export const messageTextHandler = async (event: MessageEvent): Promise<void> => {
+  const userId = event.source.userId as string
+
   try {
+    let user = await getUser(userId)
+    if (user === null) {
+      user = await createUser(userId, getInitUserData())
+    }
+
+    if (!user.isActive) {
+      await lineClient.replyMessage(
+        event.replyToken,
+        makeReplyMessage('リッチメニューより課金してくれい')
+      )
+      return
+    }
+
     const { text } = event.message as TextEventMessage
     const newText = await getCompletion(text)
 
